@@ -1,0 +1,23 @@
+This package was debianized by Daniele Valeriani <daniele@dvaleriani.net> on
+Thu, 14 Feb 2013 14:58:36 +0000.
+
+Copyright Holder:
+  Copyright (C) 2012 Daniele Valeriani <daniele@dvaleriani.net>
+
+License:
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License, version 2
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANDABILITY of FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for details.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL-2'.
+
+This package is highly based on Adam Cécile <gandalf@le-vert.net> works done
+for the original megaclisas-status package.
+Thanks a lot Adam!

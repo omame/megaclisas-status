@@ -2,10 +2,10 @@ megaclisas-status
 =================
 
 Python script that prints out some useful information parsing the output of
-MegaCli.  
-Nagios mode is supported by passing `—nagios` at the command line.  
+MegaCli.
+Nagios mode is supported by passing `—nagios` at the command line.
 This is a complete rewrite of [the original megaclisas-status]
-(https://github.com/npinto/megaclisas-status).  
+(http://hwraid.le-vert.net).
 The output is compatible with the original version except for the additional
 'Drives' column in the arrays information.
 

@@ -194,15 +194,15 @@ for controller_number in range(controllers_number):
     resulting_info[controller_id]['disks'] = []
     output = get_output('-LdPdInfo -a%d -NoLog' % \
                         controller_number)
-    # There is only one enclosure for each controller - or am I wrong?
-    enclosure_number = get_info('Enclosure Device ID', output)
-    if not enclosure_number or enclosure_number == 'N/A':
-        exiterror('Cannot fetch enclosure ID for controller %d' % \
-                    controller_number)
+    # There can be different enclosures attached to the same controller
+    enclosure_numbers = get_info('Enclosure Device ID', output, 'list')
     slot_numbers = get_info('Slot Number', output, 'list')
     disk_identifiers = [a.split()[0] for a in get_info(r'PD$', output, 'list')]
-    slots_list = zip(slot_numbers, disk_identifiers)
-    for slot_id, disk_id in slots_list:
+    slots_list = zip(enclosure_numbers, slot_numbers, disk_identifiers)
+    for enclosure_number, slot_id, disk_id in slots_list:
+        if not enclosure_number or enclosure_number == 'N/A':
+            exiterror('Cannot fetch enclosure ID for drive %d on ' +
+                        'controller %d' % controller_number)
         output = get_output('-PDInfo -PhysDrv [%s:%s] -a%d' % \
                             (enclosure_number, slot_id, controller_number))
         state = get_info('Firmware state', output)

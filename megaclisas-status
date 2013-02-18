@@ -196,6 +196,9 @@ for controller_number in range(controllers_number):
                         controller_number)
     # There is only one enclosure for each controller - or am I wrong?
     enclosure_number = get_info('Enclosure Device ID', output)
+    if not enclosure_number or enclosure_number == 'N/A':
+        exiterror('Cannot fetch enclosure ID for controller %d' % \
+                    controller_number)
     slot_numbers = get_info('Slot Number', output, 'list')
     disk_identifiers = [a.split()[0] for a in get_info(r'PD$', output, 'list')]
     slots_list = zip(slot_numbers, disk_identifiers)

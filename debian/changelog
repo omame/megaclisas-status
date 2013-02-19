@@ -1,4 +1,10 @@
-megaclisas-status (0.9.3) unstable; urgency=low
+megaclisas-status (0.9.4) unstable; urgency=low
+
+  * Various bugfixes
+
+ -- Daniele Valeriani <daniele@dvaleriani.net>  Tue, 19 Feb 2013 11:19:22 +0000
+
+ megaclisas-status (0.9.3) unstable; urgency=low
 
   * Initial build after the fork
 

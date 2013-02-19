@@ -203,7 +203,7 @@ for controller_number in range(controllers_number):
         if not enclosure_number or enclosure_number == 'N/A':
             exiterror('Cannot fetch enclosure ID for drive %d on ' +
                         'controller %d' % controller_number)
-        output = get_output('-PDInfo -PhysDrv [%s:%s] -a%d' % \
+        output = get_output('-PDInfo -PhysDrv \[%s:%s\] -a%d' % \
                             (enclosure_number, slot_id, controller_number))
         state = get_info('Firmware state', output)
         if state not in ['Online', 'Online, Spun Up']:

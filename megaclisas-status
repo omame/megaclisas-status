@@ -69,8 +69,8 @@ something_is_wrong = False
 
 # We are going to put everything into a dictionary
 # Sample structure:
-# {'c0': {'arrays': {'c0u0': [drives_number, 'RAID1', '465G', 'Optimal', 'None'],
-#                    'c0u1': [drives_number, 'RAID1', '465G', 'Optimal', 'None']},
+# {'c0': {'arrays': {'c0u0': ['drives_number', 'RAID1', '465G', 'Optimal', 'None'],
+#                    'c0u1': ['drives_number', 'RAID1', '465G', 'Optimal', 'None']},
 #         'disks': [[controller_number,
 #                    virtual_disk,
 #                    disk_id,
@@ -188,7 +188,7 @@ for controller_number in range(controllers_number):
         if not operation:
             operation = 'None'
 
-        this_array = [drives_number, raid_type, size, state, operation]
+        this_array = [str(drives_number), raid_type, size, state, operation]
         resulting_info[controller_id]['arrays'][array_id] = this_array
     # Finally moving to physical disks
     resulting_info[controller_id]['disks'] = []

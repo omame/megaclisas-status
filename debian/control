@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Daniele Valeriani <daniele@dvaleriani.net
 Build-Depends: debhelper (>= 5)
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 
 Package: megaclisas-status
 Architecture: all

@@ -1,3 +1,9 @@
+megaclisas-status (0.9.5) unstable; urgency=low
+
+  * Fixed a typo
+
+ -- Daniele Valeriani <daniele@dvaleriani.net>  Tue, 29 Jan 2014 11:12:15 +0000
+
 megaclisas-status (0.9.4) unstable; urgency=low
 
   * Various bugfixes

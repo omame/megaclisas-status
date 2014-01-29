@@ -214,7 +214,7 @@ for controller_number in range(controllers_number):
 
         model = re.sub(r'\s+', ' ', get_info('Inquiry Data', output))
 
-        virtual_disk_string = get_info('Drive\'s postion', output)
+        virtual_disk_string = get_info("Drive's position", output)
         virtual_disk = virtual_disk_string.split(',')[0].split()[1]
 
         resulting_info[controller_id]['disks'].append([str(controller_number),

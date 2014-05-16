@@ -3,15 +3,16 @@
 import os
 import re
 from sys import argv, exit
+import argparse
 
+parser = argparse.ArgumentParser(description='Get the status for your megaraid'
+                                             ' controllers')
+parser.add_argument('-c', '--controller', dest='controller', action='store',
+                    help='Controller ID')
+parser.add_argument('-n', '--nagios', dest='nagiosmode', action='store_false',
+                    help='Nagios format output')
 
-def exithelp(error_code=0):
-    '''
-    Print help message and exit
-    :error_code: Exit code
-    '''
-    print 'Usage: %s [--nagios]' % argv[0]
-    exit(error_code)
+args = parser.parse_args()
 
 
 def exiterror(msg, error_code=2):
@@ -63,7 +64,6 @@ def get_info(key, input, output_format='string'):
         exit(2)
 
 
-nagiosmode = False
 binarypath = '/usr/sbin/megacli'
 something_is_wrong = False
 
@@ -100,33 +100,32 @@ nagiosgoodarray = 0
 nagiosbadarray = 0
 nagiosgooddisk = 0
 nagiosbaddisk = 0
-if '--nagios' in argv:
-    nagiosmode = True
-
-if len(argv) > 2:
-    exithelp(1)
 
 # Check binary exists and can be executed.
 # If not, return UNKNOWN nagios error code or a console message.
 if not os.path.exists(binarypath) and os.access(binarypath, os.X_OK):
-    if nagiosmode:
+    if args.nagiosmode:
         print 'UNKNOWN - Cannot find %s' % binarypath
     else:
         print 'Cannot find %s. Please install it.' % binarypath
     exit(3)
 
-# Get the number of controllers
-output = get_output('-adpCount -NoLog')
-controllers_number = int(get_info('Controller Count', output).rstrip('.'))
-if not controllers_number:
-    if nagiosmode:
-        print 'UNKNOWN - No controllers found'
-    else:
-        print 'No controllers found'
-    exit(3)
+if args.controller:
+    controllers = args.controller
+else:
+    # Get the number of controllers
+    output = get_output('-adpCount -NoLog')
+    controllers_number = int(get_info('Controller Count', output).rstrip('.'))
+    if not controllers_number:
+        if args.nagiosmode:
+            print 'UNKNOWN - No controllers found'
+        else:
+            print 'No controllers found'
+        exit(3)
+    controllers = range(controllers_number)
 
 # Start collecting info about the controllers
-for controller_number in range(controllers_number):
+for controller_number in controllers:
     controller_id = 'c%d' % controller_number
     output = get_output('-AdpAllInfo -a%d -NoLog' % controller_number)
     controllermodel = get_info('Product Name', output)
@@ -225,7 +224,7 @@ for controller_number in range(controllers_number):
 
 
 # Now let's print something
-if nagiosmode:
+if args.nagiosmode:
     status_line = 'Arrays: OK:%d Bad:%d - Disks: OK:%d Bad:%d' % \
                 (nagiosgoodarray, nagiosbadarray, nagiosgooddisk, nagiosbaddisk)
     if something_is_wrong:

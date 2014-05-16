@@ -1,4 +1,4 @@
-megaclisas-status (0.10.0) unstable; urgency=low
+megaclisas-status (0.10.0) precise; urgency=low
 
   * Migrated to argparse
   * Fixed various syntax inconsistencies

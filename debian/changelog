@@ -1,3 +1,11 @@
+megaclisas-status (0.10.0) unstable; urgency=low
+
+  * Migrated to argparse
+  * Fixed various syntax inconsistencies
+  * Added support for single controller information retrieval (-c flag)
+
+ -- Daniele Valeriani <daniele@dvaleriani.net>  Tue, 16 May 2014 13:09:03 +0000
+
 megaclisas-status (0.9.5) unstable; urgency=low
 
   * Fixed a typo

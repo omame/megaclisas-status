@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description='Get the status for your megaraid'
                                              ' controllers')
 parser.add_argument('-c', '--controller', dest='controller', action='store',
                     help='Controller ID')
-parser.add_argument('-n', '--nagios', dest='nagiosmode', action='store_false',
+parser.add_argument('-n', '--nagios', dest='nagiosmode', action='store_true',
                     help='Nagios format output')
 
 args = parser.parse_args()
@@ -60,7 +60,7 @@ def get_info(key, input, output_format='string'):
                     res.append(elem[1])
         return res
     except KeyError:
-        print 'ERROR - Key %s not found' % key
+        print 'ERROR - Key {0} not found'.format(key)
         exit(2)
 
 
@@ -105,13 +105,13 @@ nagiosbaddisk = 0
 # If not, return UNKNOWN nagios error code or a console message.
 if not os.path.exists(binarypath) and os.access(binarypath, os.X_OK):
     if args.nagiosmode:
-        print 'UNKNOWN - Cannot find %s' % binarypath
+        print 'UNKNOWN - Cannot find {0}'.format(binarypath)
     else:
-        print 'Cannot find %s. Please install it.' % binarypath
+        print 'Cannot find {0}. Please install it.'.format(binarypath)
     exit(3)
 
 if args.controller:
-    controllers = args.controller
+    controllers = [args.controller]
 else:
     # Get the number of controllers
     output = get_output('-adpCount -NoLog')
@@ -122,26 +122,26 @@ else:
         else:
             print 'No controllers found'
         exit(3)
-    controllers = range(controllers_number)
-
+    controllers = ['c' + str(a) for a in range(controllers_number)]
 # Start collecting info about the controllers
-for controller_number in controllers:
-    controller_id = 'c%d' % controller_number
-    output = get_output('-AdpAllInfo -a%d -NoLog' % controller_number)
+for controller_id in controllers:
+    controller_number = controller_id.lstrip('c')
+    output = get_output('-AdpAllInfo -a{0} -NoLog'.format(controller_number))
     controllermodel = get_info('Product Name', output)
     resulting_info[controller_id] = {}
     resulting_info[controller_id]['model'] = controllermodel
     # Now for the array info
-    output = get_output('-LdGetNum -a%d -NoLog' % controller_number)
-    arrays_number = int(get_info(r'^Number of Virtual (Disk|Drive).*$', output))
+    output = get_output('-LdGetNum -a{0} -NoLog'.format(controller_number))
+    arrays_number = int(get_info(r'^Number of Virtual (Disk|Drive).*$',
+                                 output))
     resulting_info[controller_id]['arrays'] = {}
     for array_number in range(arrays_number):
         # Temporary list to store information for each array
         # Format: [drives_number, raid_type, size, state, operation]
         this_array = []
-        array_id = 'c%du%d' % (controller_number, array_number)
-        output = get_output('-LDInfo -l%d -a%d -NoLog' % \
-                                (array_number, controller_number))
+        array_id = 'c{0}u{1}'.format(controller_number, array_number)
+        output = get_output('-LDInfo -l{0} -a{1} -NoLog'.format(array_number,
+                            controller_number))
         drives_number = get_info(r'Number Of Drives\s*((per span))?', output)
         if not drives_number:
             exiterror('Cannot any drives in array ' + array_id)
@@ -191,8 +191,7 @@ for controller_number in controllers:
         resulting_info[controller_id]['arrays'][array_id] = this_array
     # Finally moving to physical disks
     resulting_info[controller_id]['disks'] = []
-    output = get_output('-LdPdInfo -a%d -NoLog' % \
-                        controller_number)
+    output = get_output('-LdPdInfo -a{0} -NoLog'.format(controller_number))
     # There can be different enclosures attached to the same controller
     enclosure_numbers = get_info('Enclosure Device ID', output, 'list')
     slot_numbers = get_info('Slot Number', output, 'list')
@@ -200,10 +199,10 @@ for controller_number in controllers:
     slots_list = zip(enclosure_numbers, slot_numbers, disk_identifiers)
     for enclosure_number, slot_id, disk_id in slots_list:
         if not enclosure_number or enclosure_number == 'N/A':
-            exiterror('Cannot fetch enclosure ID for drive %d on ' +
-                        'controller %d' % controller_number)
-        output = get_output('-PDInfo -PhysDrv \[%s:%s\] -a%d' % \
-                            (enclosure_number, slot_id, controller_number))
+            exiterror('Cannot fetch enclosure ID for drive {0} on ' +
+                        'controller {1}'.format(disk_id, controller_number))
+        output = get_output('-PDInfo -PhysDrv \[{0}:{1}\] -a{2}'.format(
+                            enclosure_number, slot_id, controller_number))
         state = get_info('Firmware state', output)
         if state not in ['Online', 'Online, Spun Up']:
             something_is_wrong = True
@@ -219,14 +218,15 @@ for controller_number in controllers:
             virtual_disk_string = get_info("Drive's postion", output)
 
         virtual_disk = virtual_disk_string.split(',')[0].split()[1]
-        resulting_info[controller_id]['disks'].append([str(controller_number),
-                                        virtual_disk, disk_id, model, state])
+        resulting_info[controller_id]['disks'].append(
+            [str(controller_number), virtual_disk, disk_id, model, state])
 
 
 # Now let's print something
 if args.nagiosmode:
-    status_line = 'Arrays: OK:%d Bad:%d - Disks: OK:%d Bad:%d' % \
-                (nagiosgoodarray, nagiosbadarray, nagiosgooddisk, nagiosbaddisk)
+    status_line = 'Arrays: OK:{0} Bad:{1} - Disks: OK:{2} Bad:{3}'.format(
+                  nagiosgoodarray, nagiosbadarray, nagiosgooddisk,
+                  nagiosbaddisk)
     if something_is_wrong:
         exiterror(status_line)
     else:
@@ -236,18 +236,19 @@ else:
     print '-- Controller info --'
     print '-- ID | Model'
     for controller in sorted(resulting_info.keys()):
-        print '%s | %s' % (controller, resulting_info[controller]['model'])
+        print '{0} | {1}'.format(controller,
+                                 resulting_info[controller]['model'])
     print ''
     print '-- Arrays info --'
     print '-- ID | Drives | Type | Size | Status | InProgress'
     for controller in sorted(resulting_info.keys()):
         for array in sorted(resulting_info[controller]['arrays'].keys()):
-            print '%s | %s' % (array,
-                    ' | '.join(resulting_info[controller]['arrays'][array]))
+            print '{0} | {1}'.format(array,
+                  ' | '.join(resulting_info[controller]['arrays'][array]))
     print ''
     print '-- Disks info --'
     print '-- ID | Model | Status'
     for controller in sorted(resulting_info.keys()):
         for disk in sorted(resulting_info[controller]['disks']):
-            print 'c%su%sp%s | %s' % (disk[0], disk[1], disk[2],
-                                    ' | '.join(disk[3:]))
+            print 'c{0}u{1}p{2} | {3}'.format(disk[0], disk[1], disk[2],
+                                              ' | '.join(disk[3:]))

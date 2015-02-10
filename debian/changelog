@@ -1,3 +1,9 @@
+megaclisas-status (0.10.1) unstable; urgency=low
+
+  * Just updating version
+  
+ -- Marcelo Martins <btorch@gmail.com>  Tue, 10 Feb 2015 16:20:03 +0000
+ 
 megaclisas-status (0.10.0) precise; urgency=low
 
   * Migrated to argparse
